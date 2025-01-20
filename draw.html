@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Portal</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            transition: background-color 0.5s;
+        }
+
+        header {
+            background-color: #ff6600;
+            padding: 15px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        nav {
+            background-color: #333;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            transition: background 0.3s;
+            font-size: 18px;
+        }
+
+        nav a:hover {
+            background-color: #ff6600;
+            border-radius: 5px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #222;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .search-bar input {
+            padding: 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+
+        .search-bar button {
+            background-color: #ff6600;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .search-bar button:hover {
+            background-color: #e65c00;
+        }
+
+	/* Dropdown Styles */
+	.dropdown {
+	    position: relative;
+	    display: inline-block;
+	}
+
+	.dropdown-btn {
+	    color: #fff;
+	    text-decoration: none;
+	    padding: 10px 15px;
+	    font-size: 18px;
+	    transition: background 0.3s;
+	}
+	
+	.dropdown-btn:hover {
+	    background-color: #ff6600;
+	    border-radius: 5px;
+	}
+
+	.dropdown-content {
+	    display: none;
+	    position: absolute;
+	    background-color: #333;
+	    min-width: 160px;
+	    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+	    z-index: 1;
+	    border-radius: 5px;
+	}
+
+	.dropdown-content a {
+	    color: #fff;
+	    padding: 10px 15px;
+	    text-decoration: none;
+	    display: block;
+	    font-size: 16px;
+	}
+	
+	.dropdown-content a:hover {
+	    background-color: #ff6600;
+	    border-radius: 5px;
+	}
+	
+	.dropdown:hover .dropdown-content {
+	    display: block;
+	}
+
+
+        .slideshow-container {
+            position: relative;
+            width: 80%;
+            margin: 20px auto;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .slideshow-wrapper {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            flex: 0 0 auto;
+        }
+
+        .slide img {
+            width: 30%;
+            height: 100%;
+            object-fit: cover;
+            margin: 0 10px;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .slide img:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-arrows {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            z-index: 10;
+            transform: translateY(-50%);
+            width: 100%;
+        }
+
+        .arrow {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .arrow:hover {
+            background-color: #ff6600;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .movie-card img {
+    width: 200px; /* Set a smaller width */
+    height: 300px; /* Maintain a proportionate height */
+    object-fit: cover; /* Ensures the image doesn't distort */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.movie-card img:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.5); /* Enhance shadow on hover */
+}
+
+.movie-card {
+    display: inline-block; /* Align movie cards horizontally */
+    text-align: center; /* Center the movie title under the image */
+    margin: 10px; /* Add spacing between cards */
+    padding: 10px;
+    background-color: #222; /* Ensures contrast */
+    overflow: hidden;
+}
+
+
+
+
+        .movie-card h3 {
+            margin: 10px;
+            font-size: 18px;
+        }
+
+        .footer {
+            background-color: #333;
+            padding: 20px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .footer .social-icons {
+            margin-top: 10px;
+        }
+
+        .footer .social-icons a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 20px;
+        }
+
+        .footer .social-icons a:hover {
+            color: #ff6600;
+        }
+
+        .toggle-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ff6600;
+            color: #fff;
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .dark-mode {
+            background-color: #121212;
+            color: #fff;
+        }
+
+        .light-mode {
+            background-color: #fff;
+            color: #000;
+        }
+
+	/* Existing Styles */
+
+        .action-slideshow-container {
+            position: relative;
+            width: 80%;
+            margin: 20px auto;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .action-slideshow-wrapper {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .action-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            flex: 0 0 auto;
+        }
+
+        .action-slide img {
+            width: 30%;
+            height: 100%;
+            object-fit: cover;
+            margin: 0 10px;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .action-slide img:hover {
+            transform: scale(1.1);
+        }
+
+        .action-nav-arrows {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            z-index: 10;
+            transform: translateY(-50%);
+            width: 100%;
+        }
+
+        .action-arrow {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .action-arrow:hover {
+            background-color: #ff6600;
+        }
+
+	
+
+        /* Modal Style */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 80%;
+        }
+
+        .modal-content iframe {
+            width: 100%;
+            height: 450px;
+            border: none;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff6600;
+            color: white;
+            font-size: 22px;
+            padding: 12px;
+            cursor: pointer;
+            border: none;
+            border-radius: 50%;
+            z-index: 11;
+        }
+
+        .close-btn:hover {
+            background-color: #e65c00;
+        }
+
+        /* Back to top button */
+        #backToTop {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff6600;
+            color: #fff;
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: none;
+        }
+
+        #backToTop:hover {
+            background-color: #e65c00;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Movie Portal</h1>
+    </header>
+
+<nav>
+    <a href="#">Home</a>
+    <a href="#">Best Ratings</a>
+    <div class="dropdown">
+        <a href="#" class="dropdown-btn">Genres</a>
+        <div id="genreMenu" class="dropdown-content">
+            <!-- Genres will be dynamically populated here -->
+        </div>
+    </div>
+    <a href="#">Years</a>
+    <a href="#">Countries</a>
+    <a href="#">Contact Us</a>
+    <div id="searchContainer">
+                <form id="searchForm">
+                    <input type="text" id="search" name="query" placeholder="Search for a movie or TV series..." required>
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+</nav>
+
+
+    <div class="slideshow-container">
+        <div class="slideshow-wrapper">
+            <div class="slide">
+                <img src="Venom3.jpg" alt="Venom" data-trailer="__2bjWbetsA">
+                <img src="moana2.jpg" alt="Moana" data-trailer="hDZ7y8RP5HE">
+                <img src="mufasa.jpg" alt="Mufasa" data-trailer="lMXh6vjiZrI">
+            </div>
+            <div class="slide">
+                <img src="carry-on.jpg" alt="Carry-on" data-trailer="KS0XacjMmOc">
+                <img src="red-one.jpg" alt="Red-One" data-trailer="ipukN6qOg00">
+                <img src="sonic3.jpg" alt="Sonic3" data-trailer="8Ev6_T1ipY0">
+            </div>
+            <div class="slide">
+                <img src="wicked.jpg" alt="Wicked" data-trailer="pqi45Qhq3CI">
+                <img src="kraven.jpg" alt="Kraven" data-trailer="rze8QYwWGMs">
+                <img src="babah.jpg" alt="Babah" data-trailer="GwkhBnwmShQ">
+            </div>
+        </div>
+        <div class="nav-arrows">
+            <div class="arrow" onclick="prevSlide()">&#9664;</div>
+            <div class="arrow" onclick="nextSlide()">&#9654;</div>
+        </div>
+    </div>
+
+    <!-- Modal for Trailer -->
+    <div id="modal" class="modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="closeModal()">X</button>
+            <iframe id="trailer" src="" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <div class="section-title">Action Movies</div>
+	<div class="content">
+	    <!-- Movie Cards -->
+	    <div class="movie-card">
+	        <img src="mantera.jpg" alt="Mantera (2012)">
+	        <h3>Mantera (2012)</h3>
+	    </div>
+	    <div class="movie-card">
+	        <img src="taekwando.jpg" alt="When Taekwondo Strikes (1973)">
+	        <h3>When Taekwondo Strikes (1973)</h3>
+	    </div>
+	    <div class="movie-card">
+	        <img src="alita.jpg" alt="Alita (1973)">
+	        <h3>When Taekwondo Strikes (1973)</h3>
+	    </div>
+ 	    <div class="movie-card">
+	        <img src="the experts.jpg" alt="The Experts (1973)">
+	        <h3>When Taekwondo Strikes (1973)</h3>
+	    </div>
+	    <div class="movie-card">
+	        <img src="twister.jpg" alt="Twister (1973)">
+	        <h3>When Taekwondo Strikes (1973)</h3>
+	    </div>
+	</div>
+
+    <div class="section-title">Horror Movies</div>
+    <div class="content">
+        <!-- Movie Cards -->
+        <div class="movie-card">
+            <img src="munafik.jpg" alt="Movie 1">
+            <h3>Munafik 2 (2018)</h3>
+        </div>
+        <div class="movie-card">
+            <img src="qorin.jpg" alt="Movie 2">
+            <h3>Qorin (2022)</h3>
+        </div>
+	<div class="movie-card">
+            <img src="munkar.jpg" alt="Movie 2">
+            <h3>Munkar (2024)</h3>
+        </div>
+	<div class="movie-card">
+            <img src="pengabdi setan.jpg" alt="Movie 2">
+            <h3> Satan's Slaves (2017)</h3>
+        </div>
+	<div class="movie-card">
+            <img src="qodrat.jpg" alt="Movie 2">
+            <h3>Qodrat (2022)</h3>
+        </div>
+        <!-- Additional movie cards here -->
+    </div>
+    <div class="footer">
+        <p>&copy; 2024 Movie Portal. All rights reserved.</p>
+        <div class="social-icons">
+            <a href="#">Facebook</a>
+            <a href="#">Twitter</a>
+            <a href="#">Instagram</a>
+            <a href="#">YouTube</a>
+        </div>
+    </div>
+
+    <button id="backToTop" onclick="scrollToTop()">↑</button>
+    <button class="toggle-button" onclick="toggleMode()">🌙</button>
+    
+<script src="genre.js"></script>
+<script src="search.js"></script>
+    <script>
+
+    let slideIndex = 0;
+
+    // Slideshow functions
+    function nextSlide() {
+        const slides = document.querySelectorAll('.slide');
+        slideIndex = (slideIndex + 1) % slides.length;
+        document.querySelector('.slideshow-wrapper').style.transform = translateX(-${slideIndex * 100}%);
+    }
+
+    function prevSlide() {
+        const slides = document.querySelectorAll('.slide');
+        slideIndex = (slideIndex - 1 + slides.length) % slides.length;
+        document.querySelector('.slideshow-wrapper').style.transform = translateX(-${slideIndex * 100}%);
+    }
+
+    // Open modal with trailer
+    function openModal(trailerId) {
+        document.getElementById('modal').style.display = 'flex';
+        document.getElementById('trailer').src = https://www.youtube.com/embed/${trailerId};
+    }
+
+    // Close modal
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+        document.getElementById('trailer').src = ''; // Stop the trailer
+    }
+
+    // Back to top button visibility
+    window.onscroll = function () {
+        const backToTop = document.getElementById('backToTop');
+        if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
+            backToTop.style.display = 'block';
+        } else {
+            backToTop.style.display = 'none';
+        }
+    };
+
+    // Scroll to top
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Toggle dark and light modes
+    function toggleMode() {
+        const body = document.body;
+        const toggleBtn = document.querySelector('.toggle-button');
+        if (body.classList.contains('light-mode')) {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            toggleBtn.textContent = '🌙';
+        } else {
+            body.classList.remove('dark-mode');
+            body.classList.add('light-mode');
+            toggleBtn.textContent = '☀';
+        }
+    }
+
+    // Attach event listeners for slideshow images to open trailers
+    document.querySelectorAll('.slide img').forEach((img) => {
+        img.addEventListener('click', () => openModal(img.getAttribute('data-trailer')));
+    });document.getElementById('searchForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const query = document.getElementById('search').value.trim(); 
+           if (query) {
+                window.location.href = results.html?query=${encodeURIComponent(query)};
+            }
+        });
+
+    
+</script>
+
+</body>
+</html>

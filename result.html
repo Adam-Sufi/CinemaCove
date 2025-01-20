@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1c1c1c; /* Dark background for black theme */
+            color: #f39c12; /* Orange text color */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #f39c12; /* Orange title */
+        }
+
+	  nav {
+            background-color: #333;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            transition: background 0.3s;
+            font-size: 18px;
+        }
+
+        nav a:hover {
+            background-color: #ff6600;
+            border-radius: 5px;
+        }
+        /* Search Section */
+        #searchContainer {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #searchForm {
+            display: flex;
+            align-items: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        #search {
+            padding: 10px;
+            width: 80%;
+            border: 2px solid #f39c12; /* Orange border */
+            border-radius: 5px;
+            font-size: 1.1em;
+            outline: none;
+            background-color: #333;
+            color: white;
+        }
+
+        #search:focus {
+            border-color: #e67e22; /* Darker orange when focused */
+        }
+
+        button {
+            padding: 10px 15px;
+            margin-left: 10px;
+            background-color: #f39c12; /* Orange button */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e67e22; /* Darker orange on hover */
+        }
+
+        /* Loading Spinner */
+        #loading {
+            text-align: center;
+            font-size: 1.2em;
+            color: #f39c12;
+            display: none;
+        }
+
+        /* Movies Section */
+        #movies {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .movie {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            background-color: #333; /* Dark background for movie containers */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .movie img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .movie:hover img {
+            transform: scale(1.1);
+        }
+
+        .movie:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+        }
+
+        .movie-title {
+            font-size: 1.1em;
+            color: #f39c12; /* Orange title below the poster */
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* Modal for details */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #333;
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            overflow-y: auto;
+            max-height: 80vh;
+            color: #f39c12;
+        }
+
+        .close-btn {
+            background-color: transparent;
+            border: none;
+            font-size: 1.5em;
+            color: #f39c12;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .close-btn:hover {
+            color: #e67e22;
+        }
+
+        /* Back to Top Button */
+        #backToTop {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #f39c12;
+            color: white;
+            padding: 15px;
+            border-radius: 50%;
+            font-size: 1.5em;
+            cursor: pointer;
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #backToTop:hover {
+            background-color: #e67e22;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Search Results</h1>
+    </header>
+
+    <main>
+     <nav>
+        <a href="index.html">Home</a>
+        <a href="bestrating.html">Best Ratings</a>
+        <a href="genre-page.html">Genre</a>
+        <a href="year.html">Years</a>
+        <a href="country.html">Countries</a>
+        <a href="contactus.html">Contact Us</a>
+        </nav>
+
+
+        <div id="searchContainer">
+            <form id="searchForm">
+                <input type="text" id="search" name="query" placeholder="Search for a movie or TV series..." required>
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        <div id="loading">Loading...</div>
+        <div id="movies"></div>
+
+        <!-- Modal for details -->
+        <div id="detailsModal" class="modal">
+            <div class="modal-content">
+                <button id="closeModal" class="close-btn">X</button>
+                <div id="modalContent"></div>
+                <div id="trailerContainer"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Back to Top Button -->
+    <div id="backToTop" onclick="scrollToTop()">↑</div>
+
+    
+<script>
+    const apiKey = 'fbd1336b8b4ce3bf7c7211e627ba4e2c';
+    const apiUrl = 'https://api.themoviedb.org/3/search/multi';
+    const videosUrl = 'https://api.themoviedb.org/3/movie';
+    const seriesVideosUrl = 'https://api.themoviedb.org/3/tv';
+
+    // Get the search query from the URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('query');
+
+    // If no query is provided, redirect back to the homepage
+    if (!query) {
+        window.location.href = 'index.html'; // You can redirect to your homepage
+    } else {
+        fetchMoviesAndSeries(query);
+    }
+
+    async function fetchMoviesAndSeries(query) {
+        document.getElementById('loading').style.display = 'block';
+        try {
+            const response = await fetch(`${apiUrl}?api_key=${apiKey}&query=${encodeURIComponent(query)}&include_adult=false`);
+            const data = await response.json();
+
+            document.getElementById('loading').style.display = 'none';
+
+            if (data.results && data.results.length > 0) {
+                for (const item of data.results) {
+                    if (item.media_type === 'movie') {
+                        item.trailer = await fetchTrailer(item.id, 'movie');
+                    } else if (item.media_type === 'tv') {
+                        item.trailer = await fetchTrailer(item.id, 'tv');
+                    }
+                }
+                displayContent(data.results);
+            } else {
+                document.getElementById('movies').innerHTML = '<p>No results found.</p>';
+            }
+        } catch (error) {
+            document.getElementById('loading').style.display = 'none';
+            console.error('Error fetching data:', error);
+            document.getElementById('movies').innerHTML = '<p>Error fetching data. Please try again later.</p>';
+        }
+    }
+
+    async function fetchTrailer(id, type) {
+        try {
+            const response = await fetch(`${type === 'movie' ? videosUrl : seriesVideosUrl}/${id}/videos?api_key=${apiKey}`);
+            const data = await response.json();
+            if (data.results && data.results.length > 0) {
+                return data.results[0].key;
+            }
+            return null;
+        } catch (error) {
+            console.error('Error fetching trailer data:', error);
+            return null;
+        }
+    }
+
+    function displayContent(items) {
+        const container = document.getElementById('movies');
+        container.innerHTML = '';
+
+        items.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.classList.add('movie');
+            itemElement.onclick = () => showDetails(item);
+
+            itemElement.innerHTML = `
+                <img src="https://image.tmdb.org/t/p/w200${item.poster_path}" alt="${item.title || item.name}">
+                <h3 class="movie-title">${item.title || item.name}</h3>
+            `;
+
+            container.appendChild(itemElement);
+        });
+    }
+
+    function showDetails(item) {
+        const modalContent = document.getElementById('modalContent');
+        modalContent.innerHTML = `
+            <h2>${item.title || item.name}</h2>
+            <p>Release Date: ${item.release_date || item.first_air_date || 'Unknown'}</p>
+            <p>Rating: ${item.vote_average || 'N/A'}</p>
+            <p>${item.overview || 'No description available.'}</p>
+        `;
+
+        const trailerContainer = document.getElementById('trailerContainer');
+        if (item.trailer) {
+            trailerContainer.innerHTML = `
+                <iframe src="https://www.youtube.com/embed/${item.trailer}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            `;
+        } else {
+            trailerContainer.innerHTML = '<p>Trailer not available</p>';
+        }
+
+        document.getElementById('detailsModal').style.display = 'flex';
+    }
+
+    document.getElementById('closeModal').addEventListener('click', () => {
+        document.getElementById('detailsModal').style.display = 'none';
+    });
+
+    // Back to Top button functionality
+    window.onscroll = function() {
+        const backToTop = document.getElementById('backToTop');
+        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+            backToTop.style.display = 'block';
+        } else {
+            backToTop.style.display = 'none';
+        }
+    };
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>

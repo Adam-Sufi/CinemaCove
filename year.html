@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <title>Movies & TV Shows by Year</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(45deg, #121212, #333);
+            background-size: 200% 200%;
+            animation: gradientAnimation 3s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+         nav {
+            background-color: #333;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            transition: background 0.3s;
+            font-size: 18px;
+        }
+
+        nav a:hover {
+            background-color: #ff6600;
+            border-radius: 5px;
+        }
+
+	.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    padding: 8px;
+    border-radius: 30px;
+    width: 300px;
+    transition: all 0.3s;
+    margin: 0; /* Remove any extra margin */
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 30px;
+    background-color: #222;
+    color: white;
+    font-size: 16px;
+    outline: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-bar input::placeholder {
+    color: #aaa;
+}
+
+.search-bar input:focus {
+    background-color: #ff6600;
+    color: white;
+    box-shadow: 0 0 5px rgba(255, 102, 0, 0.7);
+}
+
+.search-bar button {
+    background-color: #ff6600;
+    color: white;
+    padding: 8px 15px; /* Adjust padding to match the input */
+    border: none;
+    border-radius: 30px; /* Match border radius with the input */
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 0; /* Remove any left margin */
+}
+
+.search-bar button:hover {
+    background-color: #e65c00;
+}
+
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 80px; /* Make space for navbar */
+            left: 0;
+            width: 200px;
+            height: 100%;
+            background-color: #222;
+            padding: 20px;
+            color: #fff;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar label {
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .year-item {
+            font-size: 18px;
+            color: #ff6600;
+            cursor: pointer;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .year-item:hover {
+            background-color: #444;
+            box-shadow: 0 0 10px rgba(255, 102, 0, 0.8);
+        }
+
+        /* Content styles */
+        .content {
+            margin-left: 220px; /* Make space for the sidebar */
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            transition: grid-template-columns 0.3s ease;
+            margin-top: 80px; /* Adjust content top position for navbar */
+        }
+
+        .movie-card {
+            background-color: #222;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .movie-card img:hover {
+            opacity: 0.9;
+        }
+
+        .movie-card h3 {
+            margin: 10px;
+            font-size: 16px;
+            color: #ff6600;
+            transition: color 0.3s ease;
+        }
+
+        .movie-card h3:hover {
+            color: #ff8533;
+        }
+
+        .footer {
+            background-color: #333;
+            padding: 20px;
+            text-align: center;
+            color: #fff;
+            margin-top: auto;
+        }
+
+        .trailer-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .trailer-container iframe {
+            width: 80%;
+            height: 80%;
+            border: none;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #ff6600;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .close-btn:hover {
+            background-color: #ff8533;
+        }
+
+    </style>
+</head>
+<body>
+     <nav>
+        <a href="index.html">Home</a>
+        <a href="bestrating.html">Best Ratings</a>
+        <a href="genre-page.html">Genre</a>
+        <a href="year.html">Years</a>
+        <a href="country.html">Countries</a>
+        <a href="contactus.html">Contact Us</a>
+        <div id="searchContainer">
+    <form id="searchForm" action="result.html" method="GET">
+        <div class="search-bar">
+            <input type="text" id="search" name="query" placeholder="Search for a movie or TV series..." required>
+            <button type="submit">Search</button>
+        </div>
+    </form>
+</div>
+
+    </nav>
+
+
+    </div>
+
+    <div class="sidebar">
+        <label for="yearSelect">Select Year:</label>
+        <div id="yearList"></div>
+    </div>
+
+    <div class="content">
+        <!-- Content cards will be dynamically injected here -->
+    </div>
+
+    <div class="trailer-container" id="trailerContainer">
+        <button class="close-btn" onclick="closeTrailer()">Close</button>
+        <iframe id="trailerIframe" src="" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        const API_KEY = 'fbd1336b8b4ce3bf7c7211e627ba4e2c';
+        const year = new URLSearchParams(window.location.search).get('year'); // Get year from URL
+
+        function populateYearList() {
+            const yearList = document.getElementById('yearList');
+            const currentYear = new Date().getFullYear(); // Current year
+            const startYear = 1980; // Define the starting year
+            let yearsHtml = "<ul style='list-style-type: none; padding: 0;'>"; // Start unordered list
+
+            for (let y = currentYear; y >= startYear; y--) {
+                yearsHtml += `<li class="year-item" onclick="changeYear(${y})">${y}</li>`;
+            }
+
+            yearsHtml += "</ul>"; // Close the list
+            yearList.innerHTML = yearsHtml; // Inject the years into the sidebar
+
+            if (year) {
+                // Highlight the selected year
+                const selectedLink = document.querySelector(`.year-item[onclick="changeYear(${year})"]`);
+                if (selectedLink) selectedLink.style.backgroundColor = '#444';
+            }
+        }
+
+        function changeYear(selectedYear) {
+            window.location.search = `?year=${selectedYear}`; // Reload with new year
+        }
+
+        async function fetchMoviesAndTVByYear(year) {
+            const movieUrl = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&primary_release_year=${year}`;
+            const tvUrl = `https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&first_air_date_year=${year}`;
+
+            try {
+                const [movieResponse, tvResponse] = await Promise.all([fetch(movieUrl), fetch(tvUrl)]);
+                const movieData = await movieResponse.json();
+                const tvData = await tvResponse.json();
+                displayMoviesAndTV(movieData.results, tvData.results);
+            } catch (error) {
+                console.error('Error fetching movies and TV:', error);
+            }
+        }
+
+        async function getTrailer(movieId) {
+            const trailerUrl = `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${API_KEY}`;
+            try {
+                const trailerResponse = await fetch(trailerUrl);
+                const trailerData = await trailerResponse.json();
+                if (trailerData.results && trailerData.results.length > 0) {
+                    return trailerData.results[0].key; // Return the first trailer key
+                }
+            } catch (error) {
+                console.error('Error fetching trailer:', error);
+            }
+            return null;
+        }
+
+        function openTrailer(trailerKey) {
+            const trailerIframe = document.getElementById('trailerIframe');
+            trailerIframe.src = `https://www.youtube.com/embed/${trailerKey}`;
+            document.getElementById('trailerContainer').style.display = 'flex'; // Show trailer
+        }
+
+        function closeTrailer() {
+            const trailerIframe = document.getElementById('trailerIframe');
+            trailerIframe.src = ''; // Stop video
+            document.getElementById('trailerContainer').style.display = 'none'; // Hide trailer
+        }
+
+        function displayMoviesAndTV(movies, tvSeries) {
+            const content = document.querySelector('.content');
+            content.innerHTML = ''; // Clear content
+
+            if (movies.length > 0) {
+                movies.forEach(async (movie) => {
+                    const trailerKey = await getTrailer(movie.id);
+                    const movieCard = document.createElement('div');
+                    movieCard.classList.add('movie-card');
+                    movieCard.innerHTML = `
+                        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" onclick="openTrailer('${trailerKey}')">
+                        <h3>${movie.title}</h3>
+                    `;
+                    content.appendChild(movieCard);
+                });
+            }
+
+            if (tvSeries.length > 0) {
+                tvSeries.forEach(async (show) => {
+                    const trailerKey = await getTrailer(show.id);
+                    const showCard = document.createElement('div');
+                    showCard.classList.add('movie-card');
+                    showCard.innerHTML = `
+                        <img src="https://image.tmdb.org/t/p/w500${show.poster_path}" alt="${show.name}" onclick="openTrailer('${trailerKey}')">
+                        <h3>${show.name}</h3>
+                    `;
+                    content.appendChild(showCard);
+                });
+            }
+        }
+
+        // Initialize
+        populateYearList();
+        if (year) {
+            fetchMoviesAndTVByYear(year);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <title>Top Rated Movies</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(45deg, #121212, #333);
+            background-size: 200% 200%;
+            animation: gradientAnimation 3s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+  nav {
+            background-color: #333;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            transition: background 0.3s;
+            font-size: 18px;
+        }
+
+        nav a:hover {
+            background-color: #ff6600;
+            border-radius: 5px;
+        }
+
+	.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    padding: 8px;
+    border-radius: 30px;
+    width: 300px;
+    transition: all 0.3s;
+    margin: 0; /* Remove any extra margin */
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 30px;
+    background-color: #222;
+    color: white;
+    font-size: 16px;
+    outline: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-bar input::placeholder {
+    color: #aaa;
+}
+
+.search-bar input:focus {
+    background-color: #ff6600;
+    color: white;
+    box-shadow: 0 0 5px rgba(255, 102, 0, 0.7);
+}
+
+.search-bar button {
+    background-color: #ff6600;
+    color: white;
+    padding: 8px 15px; /* Adjust padding to match the input */
+    border: none;
+    border-radius: 30px; /* Match border radius with the input */
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 0; /* Remove any left margin */
+}
+
+.search-bar button:hover {
+    background-color: #e65c00;
+}
+
+	 /* Styling for the rating filter dropdown */
+    select#ratingFilter {
+        background-color: #222;
+        color: white;
+        font-size: 16px;
+        padding: 10px;
+        border-radius: 30px;
+        border: 1px solid #333;
+        outline: none;
+        transition: background-color 0.3s, box-shadow 0.3s ease;
+        appearance: none; /* Remove default dropdown arrow */
+    }
+
+    /* Add a custom arrow for the select box */
+    select#ratingFilter::-ms-expand {
+        display: none;
+    }
+
+    select#ratingFilter:focus {
+        background-color: #ff6600;
+        color: white;
+        box-shadow: 0 0 5px rgba(255, 102, 0, 0.7);
+    }
+
+    /* Styling the rating filter on hover */
+    select#ratingFilter:hover {
+        background-color: #e65c00;
+    }
+
+    /* Adding a custom arrow using a pseudo-element */
+    select#ratingFilter::after {
+        content: '▼'; /* Custom arrow symbol */
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #fff;
+    }
+        .content {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 80px;
+        }
+
+        .movie-card {
+            background-color: #222;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .movie-card h3 {
+            margin: 10px;
+            font-size: 16px;
+            color: #ff6600;
+        }
+
+        .movie-card p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .trailer-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .trailer-container iframe {
+            width: 80%;
+            height: 80%;
+            border: none;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #ff6600;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .close-btn:hover {
+            background-color: #ff8533;
+        }
+    </style>
+</head>
+<body>
+     <nav>
+        <a href="index.html">Home</a>
+         <select id="ratingFilter" onchange="handleRatingChange()">
+        <option value="all">All Ratings</option>
+        <option value="10-10">10 Stars</option>
+        <option value="9-9">9 Stars</option>
+        <option value="8-8">8 Stars</option>
+        <option value="7-7">7 Stars</option>
+        <option value="6-6">6 Stars</option>
+        <option value="5-5">5 Stars</option>
+        <option value="4-4">4 Stars</option>
+        <option value="3-3">3 Stars</option>
+        <option value="2-2">2 Stars</option>
+        <option value="1-1">1 Star</option>
+    </select>
+        <a href="genre-page.html">Genre</a>
+        <a href="year.html">Years</a>
+        <a href="country.html">Countries</a>
+        <a href="contactus.html">Contact Us</a>
+        <div id="searchContainer">
+    <form id="searchForm" action="result.html" method="GET">
+        <div class="search-bar">
+            <input type="text" id="search" name="query" placeholder="Search for a movie or TV series..." required>
+            <button type="submit">Search</button>
+        </div>
+    </form>
+</div>
+
+    </nav>
+
+    <div class="content"></div>
+
+    <div class="trailer-container" id="trailerContainer">
+        <button class="close-btn" onclick="closeTrailer()">Close</button>
+        <iframe id="trailerIframe" src="" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        const API_KEY = 'fbd1336b8b4ce3bf7c7211e627ba4e2c';
+
+        async function fetchMoviesByRating(minRating, maxRating) {
+            const url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&sort_by=vote_average.desc&vote_average.gte=${minRating}&vote_average.lte=${maxRating}&vote_count.gte=50`;
+            const movies = [];
+
+            try {
+                for (let page = 1; page <= 3; page++) { // Fetch up to 3 pages
+                    const response = await fetch(`${url}&page=${page}`);
+                    const data = await response.json();
+                    if (data.results && data.results.length > 0) {
+                        movies.push(...data.results);
+                    } else {
+                        break; // Stop fetching if no results on the current page
+                    }
+                }
+                displayMovies(movies);
+            } catch (error) {
+                console.error('Error fetching movies by rating:', error);
+            }
+        }
+
+        async function getTrailer(movieId) {
+            const url = `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${API_KEY}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.results && data.results.length > 0) {
+                    return data.results[0].key; // Return the first trailer key
+                }
+            } catch (error) {
+                console.error('Error fetching trailer:', error);
+            }
+            return null;
+        }
+
+        function openTrailer(trailerKey) {
+            const trailerIframe = document.getElementById('trailerIframe');
+            trailerIframe.src = `https://www.youtube.com/embed/${trailerKey}`;
+            document.getElementById('trailerContainer').style.display = 'flex';
+        }
+
+        function closeTrailer() {
+            const trailerIframe = document.getElementById('trailerIframe');
+            trailerIframe.src = '';
+            document.getElementById('trailerContainer').style.display = 'none';
+        }
+
+        function handleRatingChange() {
+            const ratingFilter = document.getElementById('ratingFilter').value;
+            let minRating, maxRating;
+
+            switch (ratingFilter) {
+                case '10-10': minRating = 9.5; maxRating = 10; break;
+                case '9-9': minRating = 8.5; maxRating = 9.49; break;
+                case '8-8': minRating = 7.5; maxRating = 8.49; break;
+                case '7-7': minRating = 6.5; maxRating = 7.49; break;
+                case '6-6': minRating = 5.5; maxRating = 6.49; break;
+                case '5-5': minRating = 4.5; maxRating = 5.49; break;
+                case '4-4': minRating = 3.5; maxRating = 4.49; break;
+                case '3-3': minRating = 2.5; maxRating = 3.49; break;
+                case '2-2': minRating = 1.5; maxRating = 2.49; break;
+                case '1-1': minRating = 0; maxRating = 1.49; break;
+                default: minRating = 0; maxRating = 10;
+            }
+
+            fetchMoviesByRating(minRating, maxRating);
+        }
+
+        async function displayMovies(movies) {
+            const content = document.querySelector('.content');
+            content.innerHTML = '';
+
+            if (movies.length > 0) {
+                for (const movie of movies) {
+                    const trailerKey = await getTrailer(movie.id);
+                    const movieCard = document.createElement('div');
+                    movieCard.classList.add('movie-card');
+                    movieCard.innerHTML = `
+                        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" onclick="openTrailer('${trailerKey}')">
+                        <h3>${movie.title}</h3>
+                        <p>Rating: ${(movie.vote_average * 10).toFixed(1)}%</p>
+                    `;
+                    content.appendChild(movieCard);
+                }
+            } else {
+                content.innerHTML = '<p>No movies found for this rating range.</p>';
+            }
+        }
+
+        // Initial Fetch
+        fetchMoviesByRating(0, 10);
+    </script>
+</body>
+</html>
